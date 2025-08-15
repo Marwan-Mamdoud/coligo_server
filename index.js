@@ -11,7 +11,7 @@ dotenv.config({ override: true });
 const app = express();
 
 const CorsOptions = {
-  origin: [process.env.CLIENT_URL],
+  origin: process.env.CLIENT_URL,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -30,7 +30,7 @@ app.use("/quizzes", QuizzesRoutes);
 app.use("/main", async (req, res, next) => await getMainData(req, res, next));
 // Default route
 app.get("/", (req, res) => {
-  res.send("Coligo Server API is running...");
+  res.send("Coligo Server API is running.");
 });
 
 // Error handling middleware (optional)
