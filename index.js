@@ -11,7 +11,7 @@ dotenv.config({ override: true });
 const app = express();
 
 const CorsOptions = {
-  origin: "https://coligo-client.vercel.app",
+  origin: process.env.CLIENT_URL,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
