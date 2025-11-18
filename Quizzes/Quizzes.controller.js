@@ -1,10 +1,19 @@
-import Quiz from "./Quizzes.model.js";
+import {
+  createQuizService,
+  deleteQuizService,
+  getAllQuizzesService,
+  getQuizService,
+  updateQuizService,
+} from "./Quizzes.service.js";
 
 // GET all quizzes
 export const getAllQuizzes = async (req, res, next) => {
   try {
-    const quizzes = await Quiz.find().sort({ createdAt: -1 });
-    res.status(200).json({
+    // Fetch quizzes using service
+    const quizzes = await getAllQuizzesService();
+
+    // Return response
+    return res.status(200).json({
       success: true,
       message: "Quizzes fetched successfully",
       data: quizzes,
@@ -17,9 +26,11 @@ export const getAllQuizzes = async (req, res, next) => {
 // GET quiz by ID
 export const getQuizById = async (req, res, next) => {
   try {
-    const quiz = await Quiz.findById(req.params.id);
-    if (!quiz) throw new Error("Quiz not found");
-    res.status(200).json({
+    // Find quiz by ID using service
+    const quiz = await getQuizService(req.params.id);
+
+    //return response
+    return res.status(200).json({
       success: true,
       message: "Quiz fetched successfully",
       data: quiz,
@@ -32,10 +43,11 @@ export const getQuizById = async (req, res, next) => {
 // CREATE quiz
 export const createQuiz = async (req, res, next) => {
   try {
-    const { title, topic, course, type } = req.body;
-    const newQuiz = new Quiz({ title, topic, course, type });
-    await newQuiz.save();
-    res.status(201).json({
+    // Create quiz using service
+    const newQuiz = await createQuizService(req.body);
+
+    // Return response
+    return res.status(201).json({
       success: true,
       message: "Quiz created successfully",
       data: newQuiz,
@@ -48,15 +60,14 @@ export const createQuiz = async (req, res, next) => {
 // UPDATE quiz
 export const updateQuiz = async (req, res, next) => {
   try {
-    const { title, topic, course, type } = req.body;
-    const updated = await Quiz.findById(req.params.id);
-    if (!updated) throw new Error("Quiz not found");
-    updated.title = title || updated.title;
-    updated.topic = topic || updated.topic;
-    updated.course = course || updated.course;
-    updated.type = type || updated.type;
-    await updated.save();
-    res.status(200).json({
+    // Update quiz using service
+    const updated = await updateQuizService({
+      id: req.params.id,
+      updateData: req.body,
+    });
+
+    // Return response
+    return res.status(200).json({
       success: true,
       message: "Quiz updated successfully",
       data: updated,
@@ -69,9 +80,11 @@ export const updateQuiz = async (req, res, next) => {
 // DELETE quiz
 export const deleteQuiz = async (req, res, next) => {
   try {
-    const deleted = await Quiz.findByIdAndDelete(req.params.id);
-    if (!deleted) throw new Error("Quiz not found");
-    res.status(200).json({
+    // Find and delete quiz
+    const deleted = await deleteQuizService(req.params.id);
+
+    // Return response
+    return res.status(200).json({
       success: true,
       message: "Quiz deleted successfully",
       data: deleted,

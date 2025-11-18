@@ -7,7 +7,7 @@ import QuizzesRoutes from "./Quizzes/Quizzes.routes.js";
 import dotenv from "dotenv";
 import { getMainData } from "./Main/Main.controller.js";
 
-dotenv.config({ override: true });
+dotenv.config();
 const app = express();
 
 const CorsOptions = {
@@ -28,6 +28,7 @@ connectDB();
 app.use("/announcements", AnnouncementsRoutes);
 app.use("/quizzes", QuizzesRoutes);
 app.use("/main", async (req, res, next) => await getMainData(req, res, next));
+
 // Default route
 app.get("/", (req, res) => {
   res.send("Coligo Server API is running.");

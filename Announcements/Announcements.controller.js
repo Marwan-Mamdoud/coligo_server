@@ -1,10 +1,19 @@
-import Announcement from "./Announcements.model.js";
+import {
+  createAnnouncementService,
+  deleteAnnouncementService,
+  getAllAnnouncementsService,
+  getAnnouncementByIdService,
+  updateAnnouncementService,
+} from "./Announcements.service.js";
 
 // GET all announcements
 export const getAllAnnouncements = async (req, res, next) => {
   try {
-    const announcements = await Announcement.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: announcements });
+    // Fetch announcements using service
+    const announcements = await getAllAnnouncementsService();
+
+    // Return response
+    return res.json({ success: true, data: announcements });
   } catch (err) {
     next(err);
   }
@@ -13,8 +22,10 @@ export const getAllAnnouncements = async (req, res, next) => {
 // GET single announcement by ID
 export const getAnnouncementById = async (req, res, next) => {
   try {
-    const announcement = await Announcement.findById(req.params.id);
-    if (!announcement) throw new Error("Announcement Not found");
+    // Fetch announcement using service
+    const announcement = await getAnnouncementByIdService(req.params.id);
+
+    // Return response
     return res.json({ data: announcement, success: true });
   } catch (err) {
     next(err);
@@ -24,44 +35,51 @@ export const getAnnouncementById = async (req, res, next) => {
 // CREATE new announcement
 export const createAnnouncement = async (req, res, next) => {
   try {
-    const { description, category } = req.body;
-    const newAnnouncement = new Announcement({ description, category });
-    await newAnnouncement.save();
+    // Create announcement using service
+    const newAnnouncement = await createAnnouncementService(req.body);
+
+    // Return response
     return res.status(201).json({
       message: "Created successfully",
       success: true,
       data: newAnnouncement,
     });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 };
 
 // UPDATE announcement by ID
 export const updateAnnouncement = async (req, res, next) => {
   try {
-    const { description, category } = req.body;
-    const updated = await Announcement.findById(req.params.id);
-    if (!updated) throw new Error("Announcement Not found");
-    updated.description = description || updated.description;
-    updated.category = category || updated.category;
-    await updated.save();
+    // Update announcement using service
+    const updated = await updateAnnouncementService({
+      id: req.params.id,
+      data: req.body,
+    });
+
+    // Return response
     return res.json({
       message: "Updated successfully",
       success: true,
       data: updated,
     });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 };
 
 // DELETE announcement by ID
 export const deleteAnnouncement = async (req, res, next) => {
   try {
-    const deleted = await Announcement.findByIdAndDelete(req.params.id);
-    if (!deleted) throw new Error("Announcement Not found");
-    res.json({ message: "Deleted successfully", success: true, data: deleted });
+    const deleted = await deleteAnnouncementService(req.params.id);
+
+    if (deleted)
+      // Return response
+      return res.json({
+        message: "Deleted successfully",
+        success: true,
+      });
   } catch (err) {
     next(err);
   }
