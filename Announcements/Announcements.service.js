@@ -24,7 +24,7 @@ export const getAllAnnouncementsService = async () => {
 export const getAnnouncementByIdService = async (id) => {
   try {
     // Find announcement by ID
-    const announcement = await Announcement.findById(req.params.id);
+    const announcement = await Announcement.findById(id);
 
     // If not found, throw error
     if (!announcement) throw new Error("Announcement Not found");
@@ -47,7 +47,7 @@ export const createAnnouncementService = async (data) => {
 
     // Invalidate cache
     await redis.del("announcements");
-
+    await redis.del("MainAnnouncements");
     // Return response
     return newAnnouncement;
   } catch (error) {
@@ -55,7 +55,7 @@ export const createAnnouncementService = async (data) => {
   }
 };
 
-export const updateAnnouncementService = async (id, data) => {
+export const updateAnnouncementService = async ({ id, data }) => {
   try {
     // Get data from request body
     const { description, category } = data;
@@ -73,7 +73,7 @@ export const updateAnnouncementService = async (id, data) => {
 
     // Invalidate cache
     await redis.del("announcements");
-
+    await redis.del("MainAnnouncements");
     // Return response
     return updated;
   } catch (error) {
@@ -91,7 +91,7 @@ export const deleteAnnouncementService = async (id) => {
 
     // Invalidate cache
     await redis.del("announcements");
-
+    await redis.del("MainAnnouncements");
     // Return response
     return deleted;
   } catch (error) {

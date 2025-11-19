@@ -43,7 +43,7 @@ export const createQuizService = async (quizData) => {
 
     // Invalidate cache
     await redis.del("quizzes");
-
+    await redis.del("MainQuizzes");
     // Return response
     return newQuiz;
   } catch (error) {
@@ -70,7 +70,8 @@ export const updateQuizService = async ({ id, updateData }) => {
     await updated.save();
 
     // Invalidate cache
-    return await redis.del("quizzes");
+    await redis.del("quizzes");
+    return await redis.del("MainQuizzes");
   } catch (error) {
     throw error;
   }
@@ -85,7 +86,10 @@ export const deleteQuizService = async (id) => {
     if (!deleted) throw new Error("Quiz not found");
 
     // Invalidate cache
-    return await redis.del("quizzes");
+    await redis.del("quizzes");
+    await redis.del("MainQuizzes");
+    // Return response
+    return deleted;
   } catch (error) {
     throw error;
   }

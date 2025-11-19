@@ -82,13 +82,13 @@ export const deleteQuiz = async (req, res, next) => {
   try {
     // Find and delete quiz
     const deleted = await deleteQuizService(req.params.id);
-
-    // Return response
-    return res.status(200).json({
-      success: true,
-      message: "Quiz deleted successfully",
-      data: deleted,
-    });
+    if (deleted)
+      // Return response
+      return res.status(200).json({
+        success: true,
+        message: "Quiz deleted successfully",
+        data: deleted,
+      });
   } catch (err) {
     next(err);
   }
